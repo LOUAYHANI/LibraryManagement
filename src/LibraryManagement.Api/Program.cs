@@ -1,5 +1,6 @@
 using LibraryManagement.Api.Errors;
 using LibraryManagement.Application.Abstractions;
+using LibraryManagement.Application.Books;
 using LibraryManagement.Application.Loans;
 using LibraryManagement.Domain.Books;
 using LibraryManagement.Domain.Loans;
@@ -32,6 +33,8 @@ builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddScoped<ReturnBook>(); 
 builder.Services.AddSingleton<ILateFeePolicy, CappedDailyLateFeePolicy>();
 builder.Services.AddScoped<GetMemberLateFees>();
+builder.Services.AddScoped<RegisterBook>(); 
+builder.Services.AddScoped<GetBooks>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -55,7 +58,7 @@ if (app.Environment.IsDevelopment())
         2);
 
     memberRepository.Add(member);
-    bookRepository.Add(book);
+    await bookRepository.AddAsync(book, CancellationToken.None);
 }
 
 app.UseExceptionHandler();

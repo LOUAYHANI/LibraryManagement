@@ -17,9 +17,16 @@ namespace LibraryManagement.Infrastructure.Persistence
 
             return Task.FromResult(book);
         }
-        public void Add(Book book)
+        public Task AddAsync(Book book, CancellationToken cancellationToken)
         {
             _books.Add(book);
+            return Task.CompletedTask;
+        }
+        public Task<IReadOnlyCollection<Book>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            IReadOnlyCollection<Book> books = _books.ToList();
+
+            return Task.FromResult(books);
         }
     }
 }

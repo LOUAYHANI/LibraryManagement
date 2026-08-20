@@ -15,6 +15,15 @@ namespace LibraryManagement.Domain.Books
 
         public Book(Guid id, string title, string author, int copyCount)
         {
+            if (string.IsNullOrWhiteSpace(title))
+                throw new ArgumentException("Title is required.", nameof(title));
+
+            if (string.IsNullOrWhiteSpace(author))
+                throw new ArgumentException("Author is required.", nameof(author));
+
+            if (copyCount <= 0)
+                throw new ArgumentOutOfRangeException(nameof(copyCount), "Copy count must be greater than zero.");
+
             Id = id;
             Title = title;
             Author = author;

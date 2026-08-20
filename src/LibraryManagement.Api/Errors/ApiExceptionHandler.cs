@@ -20,6 +20,7 @@ namespace LibraryManagement.Api.Errors
                 LoanLimitReachedException => StatusCodes.Status409Conflict,
                 LoanNotFoundException => StatusCodes.Status404NotFound,
                 LoanAlreadyReturnedException => StatusCodes.Status409Conflict,
+                ArgumentException => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError
             };
 

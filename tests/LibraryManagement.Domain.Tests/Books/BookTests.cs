@@ -46,5 +46,26 @@ namespace LibraryManagement.Domain.Tests.Books
 
             book.FindAvailableCopy().ShouldBeNull();
         }
+
+        [Fact]
+        public void Requires_title()
+        {
+            Should.Throw<ArgumentException>(() =>
+                new Book(Guid.NewGuid(), "", "Author 1", 1));
+        }
+
+        [Fact]
+        public void Requires_author()
+        {
+            Should.Throw<ArgumentException>(() =>
+                new Book(Guid.NewGuid(), "Book 1", "", 1));
+        }
+
+        [Fact]
+        public void Requires_at_least_one_copy()
+        {
+            Should.Throw<ArgumentOutOfRangeException>(() =>
+                new Book(Guid.NewGuid(), "Book 1", "Author 1", 0));
+        }
     }
 }
