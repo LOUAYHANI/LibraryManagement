@@ -3,10 +3,10 @@ using LibraryManagement.Application.Abstractions;
 using LibraryManagement.Application.Books;
 using LibraryManagement.Application.Loans;
 using LibraryManagement.Application.Members;
-using LibraryManagement.Domain.Books;
 using LibraryManagement.Domain.Loans;
-using LibraryManagement.Domain.Members;
 using LibraryManagement.Infrastructure.Persistence;
+using LibraryManagement.Infrastructure.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,14 +16,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddSingleton<InMemoryBookRepository>();
-builder.Services.AddSingleton<InMemoryMemberRepository>();
-builder.Services.AddSingleton<InMemoryLoanRepository>();
-
-builder.Services.AddSingleton<IBookRepository>(sp => sp.GetRequiredService<InMemoryBookRepository>());
-builder.Services.AddSingleton<IMemberRepository>(sp => sp.GetRequiredService<InMemoryMemberRepository>());
-builder.Services.AddSingleton<ILoanRepository>(sp => sp.GetRequiredService<InMemoryLoanRepository>());
+builder.Services.AddDbContext<LibraryDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("LibraryDatabase")));
+builder.Services.AddScoped<IBookRepository, EfBookRepository>();
+builder.Services.AddScoped<IMemberRepository, EfMemberRepository>();
+builder.Services.AddScoped<ILoanRepository, EfLoanRepository>();
+builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<BorrowBook>();
@@ -54,8 +52,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<LibraryDbContext>();
+    dbContext.Database.Migrate();
+}
 
+app.Run();
 public partial class Program
 {
 }

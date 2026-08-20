@@ -14,7 +14,7 @@ namespace LibraryManagement.IntegrationTests.Loans
         [Fact]
         public async Task Returning_loan_returns_ok()
         {
-            await using var application = new WebApplicationFactory<Program>();
+            await using var application = new LibraryApiFactory();
             var client = application.CreateClient();
 
             var memberResponse = await client.PostAsJsonAsync("/api/members", new RegisterMemberRequest
@@ -64,7 +64,7 @@ namespace LibraryManagement.IntegrationTests.Loans
         [Fact]
         public async Task Returning_same_loan_twice_returns_conflict()
         {
-            await using var application = new WebApplicationFactory<Program>();
+            await using var application = new LibraryApiFactory();
             var client = application.CreateClient();
 
             var memberResponse = await client.PostAsJsonAsync("/api/members", new RegisterMemberRequest

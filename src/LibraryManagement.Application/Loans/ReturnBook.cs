@@ -10,17 +10,20 @@ namespace LibraryManagement.Application.Loans
         private readonly ILoanRepository _loanRepository;
         private readonly TimeProvider _timeProvider; 
         private readonly ILateFeePolicy _lateFeePolicy;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ReturnBook(
             IBookRepository bookRepository,
             ILoanRepository loanRepository,
             ILateFeePolicy lateFeePolicy,
+            IUnitOfWork unitOfWork,
             TimeProvider timeProvider)
         {
             _bookRepository = bookRepository;
             _loanRepository = loanRepository;
             _timeProvider = timeProvider;
             _lateFeePolicy = lateFeePolicy;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<int> ExecuteAsync(Guid loanId, CancellationToken cancellationToken)
@@ -44,6 +47,7 @@ namespace LibraryManagement.Application.Loans
 
             var overdueDays = loan.Return(today, _lateFeePolicy);
             copy.ReturnToShelf();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return overdueDays;
         }

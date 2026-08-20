@@ -3,11 +3,14 @@ namespace LibraryManagement.Domain.Books
 {
     public class BookCopy
     {
-        public Guid Id { get; }
-
+        public Guid Id { get; private set; }
         public CopyState State { get; private set; }
 
         public bool IsAvailable => State == CopyState.OnShelf;
+
+        private BookCopy()
+        {
+        }
 
         public BookCopy(Guid id)
         {

@@ -12,7 +12,9 @@ namespace LibraryManagement.Application.Tests.Books
         public async Task Registers_book_with_requested_copies()
         {
             var bookRepository = Substitute.For<IBookRepository>();
-            var registerBook = new RegisterBook(bookRepository);
+            var unitOfWork = Substitute.For<IUnitOfWork>();
+
+            var registerBook = new RegisterBook(bookRepository, unitOfWork);
 
             var book = await registerBook.ExecuteAsync(
                 "Book 1",
@@ -26,6 +28,9 @@ namespace LibraryManagement.Application.Tests.Books
 
             await bookRepository.Received(1)
                 .AddAsync(Arg.Is<Book>(x => x.Id == book.Id), Arg.Any<CancellationToken>());
+
+            await unitOfWork.Received(1)
+                .SaveChangesAsync(Arg.Any<CancellationToken>());
         }
     }
 }

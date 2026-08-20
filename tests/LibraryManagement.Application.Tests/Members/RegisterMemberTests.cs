@@ -12,7 +12,9 @@ namespace LibraryManagement.Application.Tests.Members
         public async Task Registers_member()
         {
             var memberRepository = Substitute.For<IMemberRepository>();
-            var registerMember = new RegisterMember(memberRepository);
+            var unitOfWork = Substitute.For<IUnitOfWork>();
+
+            var registerMember = new RegisterMember(memberRepository, unitOfWork);
 
             var member = await registerMember.ExecuteAsync(
                 "Member 1",
@@ -24,6 +26,9 @@ namespace LibraryManagement.Application.Tests.Members
 
             await memberRepository.Received(1)
                 .AddAsync(Arg.Is<Member>(x => x.Id == member.Id), Arg.Any<CancellationToken>());
+
+            await unitOfWork.Received(1)
+                .SaveChangesAsync(Arg.Any<CancellationToken>());
         }
     }
 }

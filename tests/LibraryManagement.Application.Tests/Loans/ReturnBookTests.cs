@@ -28,6 +28,7 @@ namespace LibraryManagement.Application.Tests.Loans
 
             var bookRepository = Substitute.For<IBookRepository>();
             var loanRepository = Substitute.For<ILoanRepository>();
+            var unitOfWork = Substitute.For<IUnitOfWork>();
 
             loanRepository.GetByIdAsync(loan.Id, Arg.Any<CancellationToken>()).Returns(loan);
             bookRepository.GetByCopyIdAsync(copy.Id, Arg.Any<CancellationToken>()).Returns(book);
@@ -38,10 +39,11 @@ namespace LibraryManagement.Application.Tests.Loans
             var lateFeePolicy = new CappedDailyLateFeePolicy();
 
             var returnBook = new ReturnBook(
-                bookRepository,
-                loanRepository,
-                lateFeePolicy,
-                timeProvider);
+                        bookRepository,
+                        loanRepository,
+                        lateFeePolicy,
+                        unitOfWork,
+                        timeProvider);
 
             var overdueDays = await returnBook.ExecuteAsync(loan.Id, CancellationToken.None);
 
@@ -69,6 +71,7 @@ namespace LibraryManagement.Application.Tests.Loans
 
             var bookRepository = Substitute.For<IBookRepository>();
             var loanRepository = Substitute.For<ILoanRepository>();
+            var unitOfWork = Substitute.For<IUnitOfWork>();
 
             loanRepository.GetByIdAsync(loan.Id, Arg.Any<CancellationToken>()).Returns(loan);
             bookRepository.GetByCopyIdAsync(copy.Id, Arg.Any<CancellationToken>()).Returns(book);
@@ -79,10 +82,11 @@ namespace LibraryManagement.Application.Tests.Loans
             var lateFeePolicy = new CappedDailyLateFeePolicy();
 
             var returnBook = new ReturnBook(
-                bookRepository,
-                loanRepository,
-                lateFeePolicy,
-                timeProvider);
+                        bookRepository,
+                        loanRepository,
+                        lateFeePolicy,
+                        unitOfWork,
+                        timeProvider);
 
             var overdueDays = await returnBook.ExecuteAsync(loan.Id, CancellationToken.None);
 
@@ -97,16 +101,18 @@ namespace LibraryManagement.Application.Tests.Loans
 
             var bookRepository = Substitute.For<IBookRepository>();
             var loanRepository = Substitute.For<ILoanRepository>();
+            var unitOfWork = Substitute.For<IUnitOfWork>();
 
             loanRepository.GetByIdAsync(loanId, Arg.Any<CancellationToken>())
                 .Returns((Loan?)null);
             var lateFeePolicy = new CappedDailyLateFeePolicy();
 
             var returnBook = new ReturnBook(
-                bookRepository,
-                loanRepository,
-                lateFeePolicy,
-                TimeProvider.System);
+                        bookRepository,
+                        loanRepository,
+                        lateFeePolicy,
+                        unitOfWork,
+                        TimeProvider.System);
 
             await Should.ThrowAsync<LoanNotFoundException>(() =>
                 returnBook.ExecuteAsync(loanId, CancellationToken.None));

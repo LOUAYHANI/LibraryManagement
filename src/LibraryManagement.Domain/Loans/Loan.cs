@@ -3,20 +3,18 @@ namespace LibraryManagement.Domain.Loans
 {
     public class Loan
     {
-        public Guid Id { get; }
-
-        public Guid MemberId { get; }
-
-        public Guid BookCopyId { get; }
-
-        public DateOnly BorrowedOn { get; }
-
-        public DateOnly DueDate { get; }
-
+        public Guid Id { get; private set; }
+        public Guid MemberId { get; private set; }
+        public Guid BookCopyId { get; private set; }
+        public DateOnly BorrowedOn { get; private set; }
+        public DateOnly DueDate { get; private set; }
         public DateOnly? ReturnedOn { get; private set; }
+        public decimal LateFeeAmount { get; private set; }
 
         public bool IsActive => ReturnedOn is null;
-        public decimal LateFeeAmount { get; private set; }
+        private Loan()
+        {
+        }
 
         public Loan(
             Guid id,

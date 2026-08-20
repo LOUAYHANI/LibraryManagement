@@ -14,7 +14,7 @@ namespace LibraryManagement.IntegrationTests.Loans
         [Fact]
         public async Task Borrowing_available_book_returns_created()
         {
-            await using var application = new WebApplicationFactory<Program>();
+            await using var application = new LibraryApiFactory();
             var client = application.CreateClient();
 
             var memberRequest = new RegisterMemberRequest

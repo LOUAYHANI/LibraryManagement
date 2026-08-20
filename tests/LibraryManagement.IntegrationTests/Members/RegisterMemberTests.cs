@@ -12,7 +12,7 @@ namespace LibraryManagement.IntegrationTests.Members
         [Fact]
         public async Task Registers_standard_member()
         {
-            await using var application = new WebApplicationFactory<Program>();
+            await using var application = new LibraryApiFactory();
             var client = application.CreateClient();
 
             var request = new RegisterMemberRequest

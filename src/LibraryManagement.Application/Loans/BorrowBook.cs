@@ -10,14 +10,17 @@ namespace LibraryManagement.Application.Loans
         private readonly IMemberRepository _memberRepository;
         private readonly ILoanRepository _loanRepository;
         private readonly TimeProvider _timeProvider;
+        private readonly IUnitOfWork _unitOfWork;
         public BorrowBook(IBookRepository bookRepository,
                         IMemberRepository memberRepository,
                         ILoanRepository loanRepository,
+                        IUnitOfWork unitOfWork,
                         TimeProvider timeProvider)
         {
             _bookRepository = bookRepository;
             _memberRepository = memberRepository;
             _loanRepository = loanRepository;
+            _unitOfWork = unitOfWork;
             _timeProvider = timeProvider;
         }
 
@@ -55,6 +58,7 @@ namespace LibraryManagement.Application.Loans
                 member.LoanDurationDays);
 
             await _loanRepository.AddAsync(loan, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return loan;
         }

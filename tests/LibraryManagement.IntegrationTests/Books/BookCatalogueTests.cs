@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using LibraryManagement.Api.Contracts.Books;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Shouldly;
 
 namespace LibraryManagement.IntegrationTests.Books
@@ -11,7 +10,7 @@ namespace LibraryManagement.IntegrationTests.Books
         [Fact]
         public async Task Registers_and_returns_book()
         {
-            await using var application = new WebApplicationFactory<Program>();
+            await using var application = new LibraryApiFactory();
             var client = application.CreateClient();
 
             var request = new RegisterBookRequest

@@ -5,13 +5,16 @@ namespace LibraryManagement.Domain.Books
     {
         private readonly List<BookCopy> _copies = new();
 
-        public Guid Id { get; }
-
-        public string Title { get; }
-
-        public string Author { get; }
-
+        public Guid Id { get; private set; }
+        public string Title { get; private set; }
+        public string Author { get; private set; }
         public IReadOnlyCollection<BookCopy> Copies => _copies;
+
+        private Book()
+        {
+            Title = string.Empty;
+            Author = string.Empty;
+        }
 
         public Book(Guid id, string title, string author, int copyCount)
         {

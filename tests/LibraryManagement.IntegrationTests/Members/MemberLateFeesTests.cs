@@ -12,7 +12,7 @@ namespace LibraryManagement.IntegrationTests.Members
         [Fact]
         public async Task Member_without_overdue_loans_has_no_late_fees()
         {
-            await using var application = new WebApplicationFactory<Program>();
+            await using var application = new LibraryApiFactory();
             var client = application.CreateClient();
 
             var createResponse = await client.PostAsJsonAsync("/api/members", new RegisterMemberRequest
@@ -40,7 +40,7 @@ namespace LibraryManagement.IntegrationTests.Members
         [Fact]
         public async Task Unknown_member_returns_not_found()
         {
-            await using var application = new WebApplicationFactory<Program>();
+            await using var application = new LibraryApiFactory();
             var client = application.CreateClient();
 
             var response = await client.GetAsync(
