@@ -23,6 +23,7 @@ namespace LibraryManagement.Domain.Tests.Loans
         [Fact]
         public void Return_on_due_date_has_no_overdue_days()
         {
+            var policy = new CappedDailyLateFeePolicy();
             var loan = new Loan(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
@@ -30,7 +31,7 @@ namespace LibraryManagement.Domain.Tests.Loans
                 new DateOnly(2026, 8, 20),
                 21);
 
-            var overdueDays = loan.Return(new DateOnly(2026, 9, 10));
+            var overdueDays = loan.Return(new DateOnly(2026, 9, 10), policy);
 
             overdueDays.ShouldBe(0);
             loan.ReturnedOn.ShouldBe(new DateOnly(2026, 9, 10));
@@ -40,6 +41,7 @@ namespace LibraryManagement.Domain.Tests.Loans
         [Fact]
         public void Early_return_has_no_overdue_days()
         {
+            var policy = new CappedDailyLateFeePolicy();
             var loan = new Loan(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
@@ -47,7 +49,7 @@ namespace LibraryManagement.Domain.Tests.Loans
                 new DateOnly(2026, 8, 20),
                 21);
 
-            var overdueDays = loan.Return(new DateOnly(2026, 9, 5));
+            var overdueDays = loan.Return(new DateOnly(2026, 9, 5), policy);
 
             overdueDays.ShouldBe(0);
         }
@@ -55,6 +57,7 @@ namespace LibraryManagement.Domain.Tests.Loans
         [Fact]
         public void Calculates_overdue_days()
         {
+            var policy = new CappedDailyLateFeePolicy();
             var loan = new Loan(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
@@ -62,7 +65,7 @@ namespace LibraryManagement.Domain.Tests.Loans
                 new DateOnly(2026, 8, 20),
                 21);
 
-            var overdueDays = loan.Return(new DateOnly(2026, 9, 15));
+            var overdueDays = loan.Return(new DateOnly(2026, 9, 15), policy);
 
             overdueDays.ShouldBe(5);
         }
@@ -70,6 +73,7 @@ namespace LibraryManagement.Domain.Tests.Loans
         [Fact]
         public void Cannot_return_same_loan_twice()
         {
+            var policy = new CappedDailyLateFeePolicy();
             var loan = new Loan(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
@@ -77,10 +81,10 @@ namespace LibraryManagement.Domain.Tests.Loans
                 new DateOnly(2026, 8, 20),
                 21);
 
-            loan.Return(new DateOnly(2026, 9, 10));
+            loan.Return(new DateOnly(2026, 9, 10), policy);
 
             Should.Throw<LoanAlreadyReturnedException>(() =>
-                loan.Return(new DateOnly(2026, 9, 11)));
+                loan.Return(new DateOnly(2026, 9, 11), policy));
         }
     }
 }

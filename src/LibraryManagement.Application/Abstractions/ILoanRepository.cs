@@ -8,5 +8,6 @@ namespace LibraryManagement.Application.Abstractions
 
         Task AddAsync(Loan loan, CancellationToken cancellationToken);
         Task<Loan?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<IReadOnlyCollection<Loan>> GetByMemberIdAsync(Guid memberId, CancellationToken cancellationToken);
     }
 }

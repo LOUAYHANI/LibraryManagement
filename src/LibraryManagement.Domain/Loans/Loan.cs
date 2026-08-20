@@ -12,8 +12,11 @@ namespace LibraryManagement.Domain.Loans
         public DateOnly BorrowedOn { get; }
 
         public DateOnly DueDate { get; }
+
         public DateOnly? ReturnedOn { get; private set; }
+
         public bool IsActive => ReturnedOn is null;
+        public decimal LateFeeAmount { get; private set; }
 
         public Loan(
             Guid id,
@@ -29,15 +32,22 @@ namespace LibraryManagement.Domain.Loans
             DueDate = borrowedOn.AddDays(loanDurationDays);
         }
 
-        public int Return(DateOnly returnedOn)
+        public int Return(DateOnly returnedOn, ILateFeePolicy lateFeePolicy)
         {
             if (!IsActive)
                 throw new LoanAlreadyReturnedException(Id);
 
-            ReturnedOn = returnedOn;
+            var overdueDays = CalculateOverdueDays(returnedOn);
 
-            return returnedOn > DueDate
-                ? returnedOn.DayNumber - DueDate.DayNumber
+            ReturnedOn = returnedOn;
+            LateFeeAmount = lateFeePolicy.Calculate(overdueDays);
+
+            return overdueDays;
+        }
+        public int CalculateOverdueDays(DateOnly asOfDate)
+        {
+            return asOfDate > DueDate
+                ? asOfDate.DayNumber - DueDate.DayNumber
                 : 0;
         }
     }

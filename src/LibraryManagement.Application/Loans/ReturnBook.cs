@@ -1,5 +1,6 @@
 ﻿using LibraryManagement.Application.Abstractions;
 using LibraryManagement.Application.Loans.Exceptions;
+using LibraryManagement.Domain.Loans;
 
 namespace LibraryManagement.Application.Loans
 {
@@ -7,16 +8,19 @@ namespace LibraryManagement.Application.Loans
     {
         private readonly IBookRepository _bookRepository;
         private readonly ILoanRepository _loanRepository;
-        private readonly TimeProvider _timeProvider;
+        private readonly TimeProvider _timeProvider; 
+        private readonly ILateFeePolicy _lateFeePolicy;
 
         public ReturnBook(
             IBookRepository bookRepository,
             ILoanRepository loanRepository,
+            ILateFeePolicy lateFeePolicy,
             TimeProvider timeProvider)
         {
             _bookRepository = bookRepository;
             _loanRepository = loanRepository;
             _timeProvider = timeProvider;
+            _lateFeePolicy = lateFeePolicy;
         }
 
         public async Task<int> ExecuteAsync(Guid loanId, CancellationToken cancellationToken)
@@ -38,7 +42,7 @@ namespace LibraryManagement.Application.Loans
 
             var today = DateOnly.FromDateTime(_timeProvider.GetLocalNow().DateTime);
 
-            var overdueDays = loan.Return(today);
+            var overdueDays = loan.Return(today, _lateFeePolicy);
             copy.ReturnToShelf();
 
             return overdueDays;

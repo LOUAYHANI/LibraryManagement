@@ -6,6 +6,7 @@ using LibraryManagement.Domain.Loans;
 using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 using Shouldly;
+using System;
 
 namespace LibraryManagement.Application.Tests.Loans
 {
@@ -34,7 +35,13 @@ namespace LibraryManagement.Application.Tests.Loans
             var timeProvider = new FakeTimeProvider(
                 new DateTimeOffset(2026, 8, 20, 10, 0, 0, TimeSpan.Zero));
 
-            var returnBook = new ReturnBook(bookRepository, loanRepository, timeProvider);
+            var lateFeePolicy = new CappedDailyLateFeePolicy();
+
+            var returnBook = new ReturnBook(
+                bookRepository,
+                loanRepository,
+                lateFeePolicy,
+                timeProvider);
 
             var overdueDays = await returnBook.ExecuteAsync(loan.Id, CancellationToken.None);
 
@@ -69,7 +76,13 @@ namespace LibraryManagement.Application.Tests.Loans
             var timeProvider = new FakeTimeProvider(
                 new DateTimeOffset(2026, 8, 20, 10, 0, 0, TimeSpan.Zero));
 
-            var returnBook = new ReturnBook(bookRepository, loanRepository, timeProvider);
+            var lateFeePolicy = new CappedDailyLateFeePolicy();
+
+            var returnBook = new ReturnBook(
+                bookRepository,
+                loanRepository,
+                lateFeePolicy,
+                timeProvider);
 
             var overdueDays = await returnBook.ExecuteAsync(loan.Id, CancellationToken.None);
 
@@ -87,10 +100,12 @@ namespace LibraryManagement.Application.Tests.Loans
 
             loanRepository.GetByIdAsync(loanId, Arg.Any<CancellationToken>())
                 .Returns((Loan?)null);
+            var lateFeePolicy = new CappedDailyLateFeePolicy();
 
             var returnBook = new ReturnBook(
                 bookRepository,
                 loanRepository,
+                lateFeePolicy,
                 TimeProvider.System);
 
             await Should.ThrowAsync<LoanNotFoundException>(() =>

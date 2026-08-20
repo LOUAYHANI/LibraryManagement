@@ -23,5 +23,13 @@ namespace LibraryManagement.Infrastructure.Persistence
         {
             return Task.FromResult(_loans.SingleOrDefault(x => x.Id == id));
         }
+        public Task<IReadOnlyCollection<Loan>> GetByMemberIdAsync(Guid memberId, CancellationToken cancellationToken)
+        {
+            IReadOnlyCollection<Loan> loans = _loans
+                .Where(x => x.MemberId == memberId)
+                .ToList();
+
+            return Task.FromResult(loans);
+        }
     }
 }

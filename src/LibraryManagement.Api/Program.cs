@@ -1,9 +1,10 @@
+using LibraryManagement.Api.Errors;
 using LibraryManagement.Application.Abstractions;
 using LibraryManagement.Application.Loans;
 using LibraryManagement.Domain.Books;
+using LibraryManagement.Domain.Loans;
 using LibraryManagement.Domain.Members;
 using LibraryManagement.Infrastructure.Persistence;
-using LibraryManagement.Api.Errors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,9 @@ builder.Services.AddScoped<BorrowBook>();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 
-builder.Services.AddScoped<ReturnBook>();
+builder.Services.AddScoped<ReturnBook>(); 
+builder.Services.AddSingleton<ILateFeePolicy, CappedDailyLateFeePolicy>();
+builder.Services.AddScoped<GetMemberLateFees>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
