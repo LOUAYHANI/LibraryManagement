@@ -2,6 +2,7 @@ using LibraryManagement.Api.Errors;
 using LibraryManagement.Application.Abstractions;
 using LibraryManagement.Application.Books;
 using LibraryManagement.Application.Loans;
+using LibraryManagement.Application.Members;
 using LibraryManagement.Domain.Books;
 using LibraryManagement.Domain.Loans;
 using LibraryManagement.Domain.Members;
@@ -35,6 +36,7 @@ builder.Services.AddSingleton<ILateFeePolicy, CappedDailyLateFeePolicy>();
 builder.Services.AddScoped<GetMemberLateFees>();
 builder.Services.AddScoped<RegisterBook>(); 
 builder.Services.AddScoped<GetBooks>();
+builder.Services.AddScoped<RegisterMember>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,23 +44,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
-    var bookRepository = app.Services.GetRequiredService<InMemoryBookRepository>();
-    var memberRepository = app.Services.GetRequiredService<InMemoryMemberRepository>();
-
-    var member = new Member(
-        Guid.Parse("11111111-1111-1111-1111-111111111111"),
-        "Member 1",
-        MembershipPlan.Standard);
-
-    var book = new Book(
-        Guid.Parse("22222222-2222-2222-2222-222222222222"),
-        "Book 1",
-        "Author 1",
-        2);
-
-    memberRepository.Add(member);
-    await bookRepository.AddAsync(book, CancellationToken.None);
 }
 
 app.UseExceptionHandler();

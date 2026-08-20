@@ -17,6 +17,9 @@ namespace LibraryManagement.Domain.Members
 
         public Member(Guid id, string name, MembershipPlan plan)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name is required.", nameof(name));
+
             Id = id;
             Name = name;
             Plan = plan;

@@ -12,9 +12,11 @@ namespace LibraryManagement.Infrastructure.Persistence
             return Task.FromResult(_members.SingleOrDefault(x => x.Id == id));
         }
 
-        public void Add(Member member)
+        public Task AddAsync(Member member, CancellationToken cancellationToken)
         {
             _members.Add(member);
+
+            return Task.CompletedTask;
         }
     }
 }

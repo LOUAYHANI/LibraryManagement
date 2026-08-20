@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using LibraryManagement.Api.Contracts.Members;
+using LibraryManagement.Domain.Members;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Shouldly;
 
@@ -14,9 +15,18 @@ namespace LibraryManagement.IntegrationTests.Members
             await using var application = new WebApplicationFactory<Program>();
             var client = application.CreateClient();
 
-            var memberId = "11111111-1111-1111-1111-111111111111";
+            var createResponse = await client.PostAsJsonAsync("/api/members", new RegisterMemberRequest
+            {
+                Name = "Member 1",
+                Plan = MembershipPlan.Standard
+            });
 
-            var response = await client.GetAsync($"/api/members/{memberId}/late-fees");
+            createResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+            var member = await createResponse.Content.ReadFromJsonAsync<MemberResponse>();
+            member.ShouldNotBeNull();
+
+            var response = await client.GetAsync($"/api/members/{member.Id}/late-fees");
 
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 

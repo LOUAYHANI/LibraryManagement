@@ -48,5 +48,12 @@ namespace LibraryManagement.Domain.Tests.Members
 
             member.LoanDurationDays.ShouldBe(28);
         }
+
+        [Fact]
+        public void Requires_name()
+        {
+            Should.Throw<ArgumentException>(() =>
+                new Member(Guid.NewGuid(), "", MembershipPlan.Standard));
+        }
     }
 }
