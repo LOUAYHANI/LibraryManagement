@@ -7,6 +7,12 @@ namespace LibraryManagement.Api.Errors
 {
     public class ApiExceptionHandler : IExceptionHandler
     {
+        private readonly ILogger<ApiExceptionHandler> _logger;
+
+        public ApiExceptionHandler(ILogger<ApiExceptionHandler> logger)
+        {
+            _logger = logger;
+        }
         public async ValueTask<bool> TryHandleAsync(
             HttpContext httpContext,
             Exception exception,
@@ -23,6 +29,12 @@ namespace LibraryManagement.Api.Errors
                 ArgumentException => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError
             };
+
+            if (statusCode == StatusCodes.Status500InternalServerError)
+            {
+                _logger.LogError(exception, "An unexpected error occurred.");
+            }
+
 
             var problem = new ProblemDetails
             {
