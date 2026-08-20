@@ -28,6 +28,7 @@ builder.Services.AddScoped<BorrowBook>();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 
+builder.Services.AddScoped<ReturnBook>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

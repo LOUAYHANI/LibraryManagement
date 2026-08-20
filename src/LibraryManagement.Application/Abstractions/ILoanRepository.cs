@@ -7,5 +7,6 @@ namespace LibraryManagement.Application.Abstractions
         Task<int> CountActiveLoansAsync(Guid memberId, CancellationToken cancellationToken);
 
         Task AddAsync(Loan loan, CancellationToken cancellationToken);
+        Task<Loan?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     }
 }

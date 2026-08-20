@@ -24,5 +24,17 @@ namespace LibraryManagement.Domain.Tests.Books
             copy.IsAvailable.ShouldBeFalse();
             copy.State.ShouldBe(CopyState.OnLoan);
         }
+
+        [Fact]
+        public void Returned_copy_is_available_again()
+        {
+            var copy = new BookCopy(Guid.NewGuid());
+
+            copy.Lend();
+            copy.ReturnToShelf();
+
+            copy.IsAvailable.ShouldBeTrue();
+            copy.State.ShouldBe(CopyState.OnShelf);
+        }
     }
 }

@@ -29,6 +29,10 @@ namespace LibraryManagement.Domain.Books
         {
             return _copies.FirstOrDefault(copy => copy.IsAvailable);
         }
+        public BookCopy? FindCopy(Guid copyId)
+        {
+            return _copies.SingleOrDefault(x => x.Id == copyId);
+        }
 
     }
 }

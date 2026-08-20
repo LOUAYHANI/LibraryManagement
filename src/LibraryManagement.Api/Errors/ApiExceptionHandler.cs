@@ -1,4 +1,5 @@
 ﻿using LibraryManagement.Application.Loans.Exceptions;
+using LibraryManagement.Domain.Loans;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,8 @@ namespace LibraryManagement.Api.Errors
                 BookNotFoundException => StatusCodes.Status404NotFound,
                 NoAvailableCopyException => StatusCodes.Status409Conflict,
                 LoanLimitReachedException => StatusCodes.Status409Conflict,
+                LoanNotFoundException => StatusCodes.Status404NotFound,
+                LoanAlreadyReturnedException => StatusCodes.Status409Conflict,
                 _ => StatusCodes.Status500InternalServerError
             };
 

@@ -19,5 +19,9 @@ namespace LibraryManagement.Domain.Books
         {
             State = CopyState.OnLoan;
         }
+        public void ReturnToShelf()
+        {
+            State = CopyState.OnShelf;
+        }
     }
 }

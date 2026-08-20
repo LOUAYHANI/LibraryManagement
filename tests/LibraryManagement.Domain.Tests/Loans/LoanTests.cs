@@ -19,5 +19,68 @@ namespace LibraryManagement.Domain.Tests.Loans
 
             loan.DueDate.ShouldBe(new DateOnly(2026, 9, 10));
         }
+
+        [Fact]
+        public void Return_on_due_date_has_no_overdue_days()
+        {
+            var loan = new Loan(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                new DateOnly(2026, 8, 20),
+                21);
+
+            var overdueDays = loan.Return(new DateOnly(2026, 9, 10));
+
+            overdueDays.ShouldBe(0);
+            loan.ReturnedOn.ShouldBe(new DateOnly(2026, 9, 10));
+            loan.IsActive.ShouldBeFalse();
+        }
+
+        [Fact]
+        public void Early_return_has_no_overdue_days()
+        {
+            var loan = new Loan(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                new DateOnly(2026, 8, 20),
+                21);
+
+            var overdueDays = loan.Return(new DateOnly(2026, 9, 5));
+
+            overdueDays.ShouldBe(0);
+        }
+
+        [Fact]
+        public void Calculates_overdue_days()
+        {
+            var loan = new Loan(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                new DateOnly(2026, 8, 20),
+                21);
+
+            var overdueDays = loan.Return(new DateOnly(2026, 9, 15));
+
+            overdueDays.ShouldBe(5);
+        }
+
+        [Fact]
+        public void Cannot_return_same_loan_twice()
+        {
+            var loan = new Loan(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                new DateOnly(2026, 8, 20),
+                21);
+
+            loan.Return(new DateOnly(2026, 9, 10));
+
+            Should.Throw<LoanAlreadyReturnedException>(() =>
+                loan.Return(new DateOnly(2026, 9, 11)));
+        }
     }
 }

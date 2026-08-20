@@ -9,10 +9,12 @@ namespace LibraryManagement.Api.Controllers
     public class LoansController : ControllerBase
     {
         private readonly BorrowBook _borrowBook;
+        private readonly ReturnBook _returnBook;
 
-        public LoansController(BorrowBook borrowBook)
+        public LoansController(BorrowBook borrowBook, ReturnBook returnBook)
         {
             _borrowBook = borrowBook;
+            _returnBook = returnBook;
         }
 
         [HttpPost]
@@ -31,6 +33,20 @@ namespace LibraryManagement.Api.Controllers
             };
 
             return Created($"/api/loans/{loan.Id}", response);
+        }
+
+        [HttpPost("{id:guid}/return")]
+        [ProducesResponseType<ReturnBookResponse>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<ReturnBookResponse>> Return(Guid id, CancellationToken cancellationToken)
+        {
+            var overdueDays = await _returnBook.ExecuteAsync(id, cancellationToken);
+
+            return Ok(new ReturnBookResponse
+            {
+                OverdueDays = overdueDays
+            });
         }
     }
 }

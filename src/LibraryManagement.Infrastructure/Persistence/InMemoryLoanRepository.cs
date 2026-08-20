@@ -11,13 +11,17 @@ namespace LibraryManagement.Infrastructure.Persistence
 
         public Task<int> CountActiveLoansAsync(Guid memberId, CancellationToken cancellationToken)
         {
-            return Task.FromResult(_loans.Count(x => x.MemberId == memberId));
+            return Task.FromResult(_loans.Count(x => x.MemberId == memberId && x.IsActive));
         }
 
         public Task AddAsync(Loan loan, CancellationToken cancellationToken)
         {
             _loans.Add(loan);
             return Task.CompletedTask;
+        }
+        public Task<Loan?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_loans.SingleOrDefault(x => x.Id == id));
         }
     }
 }

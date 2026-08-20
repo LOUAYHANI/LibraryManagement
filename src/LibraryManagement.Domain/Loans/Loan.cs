@@ -12,6 +12,8 @@ namespace LibraryManagement.Domain.Loans
         public DateOnly BorrowedOn { get; }
 
         public DateOnly DueDate { get; }
+        public DateOnly? ReturnedOn { get; private set; }
+        public bool IsActive => ReturnedOn is null;
 
         public Loan(
             Guid id,
@@ -25,6 +27,18 @@ namespace LibraryManagement.Domain.Loans
             BookCopyId = bookCopyId;
             BorrowedOn = borrowedOn;
             DueDate = borrowedOn.AddDays(loanDurationDays);
+        }
+
+        public int Return(DateOnly returnedOn)
+        {
+            if (!IsActive)
+                throw new LoanAlreadyReturnedException(Id);
+
+            ReturnedOn = returnedOn;
+
+            return returnedOn > DueDate
+                ? returnedOn.DayNumber - DueDate.DayNumber
+                : 0;
         }
     }
 }

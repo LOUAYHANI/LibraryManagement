@@ -9,7 +9,7 @@ namespace LibraryManagement.Infrastructure.Persistence
 
         public Task<Member?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return Task.FromResult(_members.FirstOrDefault(x => x.Id == id));
+            return Task.FromResult(_members.SingleOrDefault(x => x.Id == id));
         }
 
         public void Add(Member member)

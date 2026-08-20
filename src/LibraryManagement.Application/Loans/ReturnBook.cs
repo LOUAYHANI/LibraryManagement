@@ -1,0 +1,47 @@
+﻿using LibraryManagement.Application.Abstractions;
+using LibraryManagement.Application.Loans.Exceptions;
+
+namespace LibraryManagement.Application.Loans
+{
+    public class ReturnBook
+    {
+        private readonly IBookRepository _bookRepository;
+        private readonly ILoanRepository _loanRepository;
+        private readonly TimeProvider _timeProvider;
+
+        public ReturnBook(
+            IBookRepository bookRepository,
+            ILoanRepository loanRepository,
+            TimeProvider timeProvider)
+        {
+            _bookRepository = bookRepository;
+            _loanRepository = loanRepository;
+            _timeProvider = timeProvider;
+        }
+
+        public async Task<int> ExecuteAsync(Guid loanId, CancellationToken cancellationToken)
+        {
+            var loan = await _loanRepository.GetByIdAsync(loanId, cancellationToken);
+
+            if (loan is null)
+                throw new LoanNotFoundException(loanId);
+
+            var book = await _bookRepository.GetByCopyIdAsync(loan.BookCopyId, cancellationToken);
+
+            if (book is null)
+                throw new InvalidOperationException($"Book copy '{loan.BookCopyId}' could not be found.");
+
+            var copy = book.FindCopy(loan.BookCopyId);
+
+            if (copy is null)
+                throw new InvalidOperationException($"Book copy '{loan.BookCopyId}' could not be found.");
+
+            var today = DateOnly.FromDateTime(_timeProvider.GetLocalNow().DateTime);
+
+            var overdueDays = loan.Return(today);
+            copy.ReturnToShelf();
+
+            return overdueDays;
+        }
+    }
+}
